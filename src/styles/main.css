@@ -1,0 +1,28 @@
+body{
+    margin:0;
+    padding:0;
+    font-family: "Arial";
+    color:#345;
+}
+
+.mock-tab .tab-body{
+    display: none;
+}
+.mock-tab .tab-body.active{
+    display: block;
+}
+.mock-tab .tab-head.focus{
+    font-weight: bold;
+}
+
+.m-left{
+    width: 300px;
+    float: left;
+}
+.m-right{
+    margin-left: 300px;
+}
+.mock-sider{
+    float: left;
+    width:100px;
+}
