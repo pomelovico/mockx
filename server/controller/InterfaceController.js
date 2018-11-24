@@ -22,7 +22,7 @@ class InterfaceController{
         this.model.create(sid).then(successReturn(res),failReturn(res,802));
     }
     removeInterface(req,res){
-        const {id} = req.params;
+        const {id} = req.body;
         if(!id){
             return failReturn(res,804)({msg:'id invalid'});
         }

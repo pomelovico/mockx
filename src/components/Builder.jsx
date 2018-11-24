@@ -14,6 +14,16 @@ function APIItem(props){
             {props.method} / {props.path} 
         </span>
 }
+function ServerInfo({name,port,prefix,...props}){
+    return <>
+        <div><Input  name='server-name' value={name} onUpdate={(value)=>{props.update({name:value})}}  /> <button>run</button></div>
+        <div>
+            localhost:<Input name='port' value={port} onUpdate={(value)=>{props.update({port:value})}} /> 
+            / 
+            <Input  name='prefix' value={prefix} placeholder="prefix" onUpdate={(value)=>{props.update({'prefix':value})}}/>
+        </div>
+    </>
+}
 
 class Builder extends React.Component{
     constructor(props){
@@ -24,11 +34,13 @@ class Builder extends React.Component{
             interfaces:[],
             currentInterfaceIndex:null
         }
+        this.updateServer = this.updateServer.bind(this)
     }
     componentDidMount(){
         const {sid} = this.state.server;
         sid && this.queryInterfaceAll(sid);
     }
+    //查询当前server下的interface列表
     queryInterfaceAll(sid){
         Service.fetch(ACTION_TYPE.QUERY_INTERFACE_ALL,{sid}).then(data=>{
             this.setState({
@@ -37,34 +49,62 @@ class Builder extends React.Component{
             })
         }).catch((err)=>{console.log(err)});
     }
+    removeInterface(index){
+        let {interfaces,currentInterfaceIndex} = this.state;
+        let id = interfaces[index].id;
+        Service.fetch(ACTION_TYPE.REMOVE_INTERFACE,{id}).then(res=>{
+            let rest = interfaces.filter((item,key)=>{
+                return index != key;
+            });
+            if(currentInterfaceIndex === index){
+                currentInterfaceIndex = rest.length === 0 ? null : rest.length-1
+            }
+            this.setState({
+                interfaces:rest,
+                currentInterfaceIndex
+            });
+        });
+    }
+    addInterface(){
+        let {sid} = this.state.server;
+        Service.fetch(ACTION_TYPE.ADD_INTERFACE,{sid}).then(res=>{
+            let rest = this.state.interfaces.concat(res);
+            this.setState({interfaces:rest,currentInterfaceIndex:rest.length-1});
+        })
+    }
     componentWillReceiveProps({context}){
         let {servers,currentServer} = context.state;
         if(!currentServer){
-            return;
-        }
-        if(currentServer !== this.state.server.sid){
             this.setState({
-                server:servers[currentServer],
+                server:{sid:null},
                 interfaces:[],
                 currentInterfaceIndex:null
             });
+        }else{
+            this.setState({
+                server:servers[currentServer]
+            });
+            //查询并更新当前server的Interface列表
             this.queryInterfaceAll(currentServer);
         }
     }
+    
+    updateServer(payload){
+        this.props.context.updateServer({...payload,sid:this.state.server.sid});
+    }
     render(){
         const {interfaces,server,currentInterfaceIndex} = this.state;
-        if(!server.sid){
+        if(!this.props.context.state.currentServer){
             return null;;
         }
         return <div>
             <div className="m-left">
-                <div><Input  name='server-name' value={server.name}  /> <button>run</button></div>
-                <div>localhost:<Input name='port' value={server.port}  /> / <Input  name='prefix' value={server.prefix} placeholder="prefix"/></div>
+                <ServerInfo {...server} update={this.updateServer}/>
                 <DynamicItems 
                     data={interfaces} 
                     enableCheck={false}
-                    onRemove={(index)=>{console.log('remove API '+ index)}}
-                    onAdd={()=>{console.log('add API')}}
+                    onRemove={(index)=>{this.removeInterface(index);console.log('remove API '+ index)}}
+                    onAdd={()=>{this.addInterface();console.log('add API')}}
                 >
                     <APIItem onSwitchAPI={(index)=>{
                         this.setState({currentInterfaceIndex:index});

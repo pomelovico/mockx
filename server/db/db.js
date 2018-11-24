@@ -11,6 +11,7 @@ class DataBase{
     run(sql,params=[]){
         return new Promise((resolve,reject)=>{
             this.db.run(sql,params,function(err){
+                console.log(err);
                 err ? reject(err) : resolve({_lastID:this.lastID, _changes:this.changes});
             })
         });

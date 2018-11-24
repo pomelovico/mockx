@@ -17,10 +17,7 @@ class APIEditor extends React.Component{
         this.fetchAPIDetails(this.props.id);
     }
     resolveParams(str,partten){
-        if(!str){
-            return [];
-        }
-        return str.split(partten).map(value=>{
+        return !str ? [] : str.split(partten).map(value=>{
             return {
                 value,
                 enable:true

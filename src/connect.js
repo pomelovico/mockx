@@ -4,6 +4,8 @@ import axios from 'axios';
 export const Context = React.createContext({});
 const {ACTION_TYPE} = Service;
 
+import {throttle} from './utils';
+
 export function connect(Component){
     return function ConsumerWrapper(props){
         return <Context.Consumer>
@@ -28,6 +30,9 @@ function withContext(Component){
                 switchPanel:this.switchPanel.bind(this),
                 switchServer:this.switchServer.bind(this)
             };
+            this._updateServer = throttle(function(payload){
+                Service.fetch(ACTION_TYPE.UPDATE_SERVER,payload);
+            },2000)
         }
         componentDidMount(){
             this.queryServers((servers)=>{
@@ -58,7 +63,10 @@ function withContext(Component){
                     s[key] = this.state.servers[key];
                 }
                 s[server.sid] = server;
-                this.setState({servers:s});
+                this.setState({
+                    servers:s,
+                    currentServer:server.sid
+                });
             })
         }
         removeServer(sid){
@@ -80,15 +88,20 @@ function withContext(Component){
                 });
             })
         }
-        updateServer(sid,payload){
-            axios.post('./',payload,(res)=>{
-                let s = {};
-                for(let key in this.state.servers){
-
-                    s[key] = res.data.id === key ? res.data :this.state.servers[key];
+        updateServer(payload){
+            let {sid} = payload,
+                {servers} = this.state;
+            this._updateServer(payload);
+            let s = {};
+            for(let key in  servers){
+                let server = servers[key];
+                if(sid === key){
+                    s[key] = {...server,...payload}
+                }else{
+                    s[key] = server;
                 }
-                this.setState({servers:s});
-            })
+            }
+            this.setState({servers:s});
         }
         switchPanel(panel){
             this.setState({panel})

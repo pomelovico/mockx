@@ -12,7 +12,7 @@ export default class Input extends React.Component{
     handleInputChange(){
         const value = this.inputEl.value;
         this.setState({value});
-        this.props.onUpdate(this.props.index,value);
+        this.props.onUpdate(value);
     }
     handleKeyDown(){
         //TODO
@@ -36,7 +36,7 @@ export default class Input extends React.Component{
                 ref={el => {this.inputEl=el}} 
                 type="text" 
                 onChange={this.handleInputChange}
-                value={this.state.value}
+                value={this.state.value || ''}
                 onKeyDown={this.handleKeyDown}
             />
     }

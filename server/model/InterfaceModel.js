@@ -21,7 +21,7 @@ class InterfaceModel{
         `);
     }
     delete(id){
-        return this.db.run(`DELETE FORM interface WHERE id='${id}'`);
+        return this.db.run(`DELETE FROM interface WHERE id='${id}'`);
     }
     update(id,data){
         let validFiled = ['path','method','req_params','req_body','req_header','res_body','res_header','res_cookie'];

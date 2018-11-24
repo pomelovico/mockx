@@ -36,6 +36,12 @@ class DynamicItems extends React.Component{
     componentWillReceiveProps(nextProps){
         this.setState({data:nextProps.data});
     }
+    shouldComponentUpdate(nextProps,nextState){
+        if(nextState.data === this.state.data){
+            return false;
+        }
+        return true;
+    }
     renderRow(item,index){
         let child = this.props.children,
             {enableRemove,enableCheck} = this.props;
