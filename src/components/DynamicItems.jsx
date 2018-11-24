@@ -26,7 +26,11 @@ class DynamicItems extends React.Component{
         this.addItem = this.addItem.bind(this);
     }
     buildList(){
-        let items = this.state.data.map(this.renderRow.bind(this));
+        let {data} = this.state;
+        if(Object.prototype.toString.call(data) !== '[object Array]'){
+            return null;
+        }
+        let items = data.map(this.renderRow.bind(this));
         return items.length ? <ul>{items}</ul> : null;
     }
     componentWillReceiveProps(nextProps){

@@ -7,7 +7,7 @@ class ServerController{
         this.model = new ServerModel(new DataBase());
         this.query = this.query.bind(this);
         this.add = this.add.bind(this);
-        this.remove = this.query.bind(this);
+        this.remove = this.remove.bind(this);
         this.update = this.update.bind(this);
     }
     query(req,res){

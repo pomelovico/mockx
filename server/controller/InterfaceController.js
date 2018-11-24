@@ -4,7 +4,7 @@ const {successReturn,failReturn} = require('../handleReturn');
 
 class InterfaceController{
     constructor(){
-        this.model = new InterfaceModel(new DataBase('sff.db'));
+        this.model = new InterfaceModel(new DataBase());
     }
     queryInterfaceOne(req,res){
         let {id} = req.query;

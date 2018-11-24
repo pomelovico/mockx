@@ -18,59 +18,67 @@ function APIItem(props){
 class Builder extends React.Component{
     constructor(props){
         super(props);
+        let {servers,currentServer} = props.context.state;
         this.state = {
-            server:{
-                id:1,
-                name:'MockMe',
-                por:3000,
-                prefix:'',
-                api:[
-                    {
-                        id:'1_32d',
-                        path:'login',
-                        method:'GET'
-                    },
-                    {
-                        id:'2_32d',
-                        path:'signout',
-                        method:'GET',
-                    }
-                ]
-            },
-            currentAPIIndex:0
+            server:currentServer !== null ? servers[currentServer] : {sid:null},
+            interfaces:[],
+            currentInterfaceIndex:null
         }
     }
     componentDidMount(){
-        Service.fetch(ACTION_TYPE.QUERY_INTERFACE_ALL,{sid:'s_1542798569081_9cig'}).then(data=>{
-            console.log(data);
+        const {sid} = this.state.server;
+        sid && this.queryInterfaceAll(sid);
+    }
+    queryInterfaceAll(sid){
+        Service.fetch(ACTION_TYPE.QUERY_INTERFACE_ALL,{sid}).then(data=>{
             this.setState({
-                server:{...this.state.server,api:data}
+                interfaces:data,
+                currentInterfaceIndex:data.length ? 0 : null
             })
-        }).catch((err)=>{console.log(err)})
+        }).catch((err)=>{console.log(err)});
+    }
+    componentWillReceiveProps({context}){
+        let {servers,currentServer} = context.state;
+        if(!currentServer){
+            return;
+        }
+        if(currentServer !== this.state.server.sid){
+            this.setState({
+                server:servers[currentServer],
+                interfaces:[],
+                currentInterfaceIndex:null
+            });
+            this.queryInterfaceAll(currentServer);
+        }
     }
     render(){
-        const {api} = this.state.server;
+        const {interfaces,server,currentInterfaceIndex} = this.state;
+        if(!server.sid){
+            return null;;
+        }
         return <div>
             <div className="m-left">
-                <div><Input  name='server-name' value=''  /> <button>run</button></div>
-                <div>localhost:<Input name='port' value='3000'  /> / <Input  name='prefix' value=''/></div>
+                <div><Input  name='server-name' value={server.name}  /> <button>run</button></div>
+                <div>localhost:<Input name='port' value={server.port}  /> / <Input  name='prefix' value={server.prefix} placeholder="prefix"/></div>
                 <DynamicItems 
-                    data={api} 
+                    data={interfaces} 
                     enableCheck={false}
                     onRemove={(index)=>{console.log('remove API '+ index)}}
                     onAdd={()=>{console.log('add API')}}
                 >
                     <APIItem onSwitchAPI={(index)=>{
-                        this.setState({currentAPIIndex:index});
+                        this.setState({currentInterfaceIndex:index});
                     }}/>
                 </DynamicItems>
             </div>
-            <APIEditor 
-                id={api[this.state.currentAPIIndex].id}
-                onUpdate={(api)=>{
-                    
-                }}
-            />
+            {
+                currentInterfaceIndex !== null && 
+                <APIEditor 
+                    id={currentInterfaceIndex !==null ? interfaces[currentInterfaceIndex].id : null}
+                    onUpdate={(i)=>{}}
+                />
+            }
+            
         </div>
     }
 }

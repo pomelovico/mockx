@@ -4,8 +4,9 @@ class ServerModel{
     }
     create(name){
         const sid = `s_${+(new Date())}_${Math.random().toString(32).substr(2,4)}`;
-        const sql = `INSERT INTO server (sid,name,port,prefix) VALUES('${sid}','${name}',3000,'')`;
-        return this.db.run(sql).then(res=>{return {...res,sid,name}});
+        const port = 3000;
+        const sql = `INSERT INTO server (sid,name,port,prefix) VALUES('${sid}','${name}',${port},'')`;
+        return this.db.run(sql).then(res=>{return {...res,sid,name,port}});
     }
     get(){
         const sql = `SELECT * FROM server`;

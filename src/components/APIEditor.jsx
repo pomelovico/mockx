@@ -5,6 +5,8 @@ import DynamicItems from './DynamicItems';
 import Axios from 'axios';
 import Input from './Input';
 
+const {ACTION_TYPE} = Service;
+
 class APIEditor extends React.Component{
     constructor(props){
         super(props);
@@ -12,9 +14,12 @@ class APIEditor extends React.Component{
         this.handleRequestMethod = this.handleRequestMethod.bind(this);
     }
     componentDidMount(){
-        this.fetchAPIDetails(this.props.apiID)
+        this.fetchAPIDetails(this.props.id);
     }
     resolveParams(str,partten){
+        if(!str){
+            return [];
+        }
         return str.split(partten).map(value=>{
             return {
                 value,
@@ -23,7 +28,7 @@ class APIEditor extends React.Component{
         });
     }
     fetchAPIDetails(id){
-        return Axios.get('http://localhost:3000/apidetail').then(res=>{return res.data}).then(({data})=>{
+        Service.fetch(ACTION_TYPE.QUERY_INTERFACE_ONE,{id}).then(data=>{
             let req_params = this.resolveParams(data.req_params,'&'),
                 req_body = this.resolveParams(data.req_body,'&');
             this.setState({...data,req_body,req_params});
@@ -34,9 +39,9 @@ class APIEditor extends React.Component{
             method:e.target.value
         })
     }
-    componentWillReceiveProps({id}){
-        if(this.state.apiid != id){
-            this.fetchAPIDetails({apiID:id});
+    componentWillReceiveProps(nextProps){
+        if(this.state.id != nextProps.id){
+            this.fetchAPIDetails(nextProps.id);
         }
     }
     //字段，值，索引，操作（更新update，删除remove，添加add，同步数据库）
@@ -58,7 +63,7 @@ class APIEditor extends React.Component{
         });
     }
     render(){
-        if(!this.state.apiid){
+        if(!this.state.id){
             return <></>;
         }
         return <div className='m-right'>

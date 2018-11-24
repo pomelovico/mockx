@@ -18,6 +18,11 @@ export default class Input extends React.Component{
         //TODO
         
     }
+    componentWillReceiveProps({value}){
+        this.setState({
+            value:value
+        })
+    }
     shouldComponentUpdate(nextProps,nextState){
         const {value} = this.state;
         if(value !== nextProps.value || value !== nextState.value){

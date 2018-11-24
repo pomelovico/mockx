@@ -29,7 +29,7 @@ export const ACTION_TYPE = {
 
     QUERY_SERVER:"QUERY_SERVER",
     QUERY_INTERFACE_ALL:"QUERY_ALL_INTERFACE_ALL",
-    QUERY_INTERFACE_DETAIL:"QUERY_INTERFACE_DETAIL"
+    QUERY_INTERFACE_ONE:"QUERY_INTERFACE_ONE"
 }
 
 export function fetch (actionType,payload){
@@ -45,6 +45,6 @@ export function fetch (actionType,payload){
 
         case ACTION_TYPE.QUERY_SERVER : return _fetch('server/query',payload,'get');
         case ACTION_TYPE.QUERY_INTERFACE_ALL : return _fetch('interface/query_all',payload,'get');
-        case ACTION_TYPE.QUERY_INTERFACE_DETAIL : return _fetch('interface/query_one',payload,'get');
+        case ACTION_TYPE.QUERY_INTERFACE_ONE : return _fetch('interface/query_one',payload,'get');
     }
 }

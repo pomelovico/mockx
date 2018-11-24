@@ -4,27 +4,27 @@ import {connect} from '../connect';
 class Sider extends React.Component{
     constructor(props,context){
         super(props,context);
-        this.state = {
-            current: null
-        }
 
         //bind
         this.switchServer = this.switchServer.bind(this);
     }
-    switchServer(id){
-        return ()=>{
-            this.setState({current:id});
-            //通知
-            this.props.context.switchServer(id);
-        }
+    componentWillReceiveProps({context}){
+    }
+    switchServer(sid){
+        //通知
+        this.props.context.switchServer(sid);
+    }
+    removeServer(sid){
+        this.props.context.removeServer(sid);
     }
     buildServerList(servers){
         let frags = [];
         for(var key in servers){
             let server = servers[key];
-            const {id,name} = server;
-            frags.push(<li key={id} className={ id == this.props.context.state.currentServer ? 'focus' : ""}>
-            <span onClick={this.switchServer(id)}>{name}</span>
+            const {sid,name} = server;
+            frags.push(<li key={sid} className={ sid == this.props.context.state.currentServer ? 'focus' : ""}>
+            <span onClick={()=>this.switchServer(sid)}>{name}</span>
+            <button onClick={()=>{this.removeServer(sid)}}>x</button>
         </li>);
         }
         return frags.length ? <ul>{frags}</ul> : null;

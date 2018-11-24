@@ -10,9 +10,6 @@ class App extends React.Component{
     constructor(props){
         super(props);
     }
-    componentDidMount(){
-        
-    }
     render (){
         return <div>
             <Header style={{backgroundColor:'#123'}}>
@@ -20,7 +17,6 @@ class App extends React.Component{
             </Header>
             <Sider/>
             <Content/>
-            
         </div>
     }
 }

@@ -1,7 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
-export const Context = React.createContext({a:100});
+export const Context = React.createContext({});
+const {ACTION_TYPE} = Service;
 
 export function connect(Component){
     return function ConsumerWrapper(props){
@@ -17,10 +18,7 @@ function withContext(Component){
             this.state = {
                 panel:'builder',
                 currentServer:null,
-                servers:{
-                    1:{name:"Mockkkkk",id:1},
-                    2:{name:"SOuth",id:2}
-                },
+                servers:{},
             }
             this.actions = {
                 queryServers:this.queryServers.bind(this),
@@ -40,42 +38,46 @@ function withContext(Component){
             })
         }
         queryServers(cb){
-            //Async...
-            let mock = {
-                1:{name:"Moc",id:1},
-                2:{name:"SOuth",id:2}
-            }
-            this.setState({
-                servers:mock
-            });
-            cb && cb(mock);
-            axios.get('./',(res)=>{
-                this.setState({
-                    servers:res.data
-                });
-                cb && cb(res.data);
-            })
+            Service.fetch(ACTION_TYPE.QUERY_SERVER).then((servers)=>{
+                if(servers.length != 0){
+                    let temp = {};
+                    servers.forEach(s=>{
+                        temp[s.sid] = s;
+                    });
+                    this.setState({
+                        servers:temp
+                    });
+                    cb&&cb(temp);
+                }
+            }).catch(()=>{})
         }
         addServer(){
-            //Async...
-            axios.post('./',{},(res)=>{
+            Service.fetch(ACTION_TYPE.ADD_SERVER,{name:'mock'}).then(server=>{
                 let s = {};
                 for(let key in this.state.servers){
                     s[key] = this.state.servers[key];
                 }
-                s[res.data.id] = res.data;
+                s[server.sid] = server;
                 this.setState({servers:s});
             })
         }
         removeServer(sid){
-            axios.get('./',{sid},()=>{
-                let s = {};
-                for(let key in this.state.servers){
+            Service.fetch(ACTION_TYPE.REMOVE_SERVER,{sid}).then(res=>{
+                let s = {},
+                    {currentServer,servers} = this.state;
+                for(let key in servers){
                     if(sid != key){
-                        s[key] = this.state.servers[key];
+                        s[key] = servers[key];
                     }
                 }
-                this.setState({servers:s});
+                if(currentServer === sid){
+                    let keys = Object.keys(s);
+                    currentServer = keys.length ? keys[keys.length-1] : null;
+                }
+                this.setState({
+                    servers:s,
+                    currentServer
+                });
             })
         }
         updateServer(sid,payload){
