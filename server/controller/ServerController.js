@@ -1,5 +1,6 @@
 const DataBase = require('../db/db');
 const ServerModel = require('../model/ServerModel');
+const {successReturn,failReturn} = require('../handleReturn');
 
 class ServerController{
     constructor(props){
@@ -10,41 +11,28 @@ class ServerController{
         this.update = this.update.bind(this);
     }
     query(req,res){
-        this.model.get().then(data=>{
-            res.send(data);
-        },err=>{
-            res.send(err)
-        })
+        this.model.get().then(successReturn(res),failReturn(res,801));
     }
     add(req,res){
         const {name} = req.body;
         if(!name){
-            res.send({msg:'name invalid'});
-            return;
+            return failReturn(res,804)({msg:'name invalid'});
         }
-        this.model.create(name).then(result=>{
-            res.send(result);
-        });
+        this.model.create(name).then(successReturn(res),failReturn(res,802));
     }
     remove(req,res){
         const {sid} = req.body;
         if(!sid){
-            res.send({'msg':"sid invalid"});
-            return;
+            return failReturn(res,804)({msg:'sid invalid'});
         }
-        this.model.delete(sid).then((result)=>{
-            res.send(result);
-        })
+        this.model.delete(sid).then(successReturn(res),failReturn(res,803))
     }
     update(req,res){
         const {sid,...data} = req.body;
         if(!sid || Object.prototype.toString.call(data) != '[object Object]'){
-            res.send({msg:'sid or data invalid'});
-            return;
+            return failReturn(res,804)({msg:'sid invalid'});
         }
-        this.model.update(sid,data).then(result=>{
-            res.send(result);
-        })
+        this.model.update(sid,data).then(successReturn(res),failReturn(res,804))
     }
 }
 

@@ -58,8 +58,8 @@ module.exports = {
         //         loops: true //当do、while 、 for循环的判断条件可以确定是，对其进行优化
         //     },
         // })
-        new webpack.ProvidePlugin({
-            Service:path.resolve(__dirname,'./src/service.web.js')
-        })
+        // new webpack.ProvidePlugin({
+        //     Service:path.resolve(__dirname,'./src/service.web.js')
+        // })
     ]
 }

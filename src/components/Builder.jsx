@@ -46,7 +46,7 @@ class Builder extends React.Component{
             this.setState({
                 server:{...this.state.server,api:data}
             })
-        })
+        }).catch((err)=>{console.log(err)})
     }
     render(){
         const {api} = this.state.server;

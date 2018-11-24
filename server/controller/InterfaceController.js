@@ -1,21 +1,10 @@
 const DataBase = require('../db/db');
 const InterfaceModel = require('../model/InterfaceModel');
-
-const successReturn = (response) => data => response.send({
-    status:0,
-    data
-});
-
-const failReturn = (response) => (error,code) => response.send({
-    status:0,
-    code:code,
-    error
-});
-
+const {successReturn,failReturn} = require('../handleReturn');
 
 class InterfaceController{
     constructor(){
-        this.model = new InterfaceModel(new DataBase());
+        this.model = new InterfaceModel(new DataBase('sff.db'));
     }
     queryInterfaceOne(req,res){
         let {id} = req.query;

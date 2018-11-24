@@ -6,9 +6,9 @@ const {ACTION_TYPE,fetch} = service;
 //     console.log(res);
 // });
 
-// fetch(ACTION_TYPE.ADD_SERVER,{name:'hdhdsh'}).then(res=>{
-//     console.log(res);
-// });
+fetch(ACTION_TYPE.ADD_SERVER,{name:'hdhdsh'}).then(res=>{
+    console.log(res);
+});
 
 // fetch(ACTION_TYPE.UPDATE_SERVER,{sid:'s_1542852840366_3r0m',name:'lij789',port:4567}).then(res=>{
 //     console.log(res);

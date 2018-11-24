@@ -2,6 +2,16 @@ const InterfaceModel = require('./model/InterfaceModel');
 const ServerModel = require('./model/ServerModel');
 const DataBase = require('./db/db');
 
+// const {successReturn,failReturn} = require('./handleReturn');
+// const response = {
+//     send:function(msg){
+//         return Promise.resolve(msg);
+//     }
+// }
+// const successFn = successReturn(response);
+// const errorFn = failReturn(response);
+
+
 const db = new DataBase();
 const im = new InterfaceModel(db);
 const sm = new ServerModel(db);
@@ -23,12 +33,12 @@ const ACTION_TYPE = {
 }
 
 //偏函数，提前统一注入模型对象，
-const createHandler = (model) => callback => {
+const createHandler = model => callback => {
     return function(){
         const args = [].slice.call(arguments);
         return callback.apply(null,args.concat(model));
     }
-}
+};
 
 
 const handleServer = createHandler(sm);

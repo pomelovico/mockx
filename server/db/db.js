@@ -13,10 +13,11 @@ class DataBase{
             this.db.run(sql,params,function(err){
                 err ? reject(err) : resolve({_lastID:this.lastID, _changes:this.changes});
             })
-        }).catch(this.handleError);
+        });
     }
     handleError(err){
         console.log(err);
+        return 'err';
     }
     //QUERY
     get(sql,params = []){
@@ -24,7 +25,7 @@ class DataBase{
             this.db.get(sql,params,function(err,row){
                 err ? reject(err) : resolve(row);
             })
-        }).catch(this.handleError)
+        })
     }
     //All
     all(sql,params = []){
@@ -32,7 +33,7 @@ class DataBase{
             this.db.all(sql,params,function(err,rows){
                 err ? reject(err) : resolve(rows);
             })
-        }).catch(this.handleError)
+        })
     }
     //EXEC
     exec(sql,params = []){
@@ -40,7 +41,7 @@ class DataBase{
             this.db.exec(sql,params,function(err,rows){
                 err ? reject(err) : resolve(rows);
             })
-        }).catch(this.handleError);
+        });
     }
 }
 

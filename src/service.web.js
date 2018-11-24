@@ -4,14 +4,17 @@ import Axios from 'axios';
 const HOST = 'http://localhost:3001/';
 
 function _fetch(url,payload,method){
+    const handleResponse = ({data})=>{
+        const {status,payload,...rest} = data;
+        if(status == 0){
+            return payload;
+        }
+        return Promise.reject(rest);
+    }
     if(method == 'get'){
-        return Axios.get(HOST+url,{params:payload}).then(response=>{
-            return response.data.data;
-        });
+        return Axios.get(HOST+url,{params:payload}).then(handleResponse);
     }else{
-        return Axios.post(HOST + url,payload).then(response=>{
-            return response.data;
-        });
+        return Axios.post(HOST + url,payload).then(handleResponse);
     }
 }
 export const ACTION_TYPE = {
