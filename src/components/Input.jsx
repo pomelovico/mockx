@@ -12,7 +12,7 @@ export default class Input extends React.Component{
     handleInputChange(){
         const value = this.inputEl.value;
         this.setState({value});
-        this.props.onUpdate(value);
+        this.props.onUpdate(value,this.props.index);
     }
     handleKeyDown(){
         //TODO

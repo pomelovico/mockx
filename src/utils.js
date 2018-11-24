@@ -24,6 +24,16 @@ export const throttle = (callback,duration)=>{
         }
     }
 }
+ export const debounce = (callback,time)=>{
+    let timer = null;
+    return function(){
+        timer && clearTimeout(timer);
+        timer = setTimeout(()=>{
+            callback.apply(this,arguments);
+            timer = null;
+        },time)
+    }
+ }
 
 export default {
     throttle

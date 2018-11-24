@@ -5,7 +5,9 @@ class Logger extends React.Component{
         super(props)
     }
     render(){
-        return "Logger"
+        return <div className={this.props.className}>
+            Logger
+        </div>
     }
 }
 

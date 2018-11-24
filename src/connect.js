@@ -4,7 +4,7 @@ import axios from 'axios';
 export const Context = React.createContext({});
 const {ACTION_TYPE} = Service;
 
-import {throttle} from './utils';
+import {debounce} from './utils';
 
 export function connect(Component){
     return function ConsumerWrapper(props){
@@ -30,9 +30,9 @@ function withContext(Component){
                 switchPanel:this.switchPanel.bind(this),
                 switchServer:this.switchServer.bind(this)
             };
-            this._updateServer = throttle(function(payload){
+            this._updateServer = debounce(function(payload){
                 Service.fetch(ACTION_TYPE.UPDATE_SERVER,payload);
-            },2000)
+            },1000)
         }
         componentDidMount(){
             this.queryServers((servers)=>{

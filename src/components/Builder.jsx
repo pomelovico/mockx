@@ -3,9 +3,9 @@ import {connect} from '../connect';
 
 import Input from './Input';
 import APIEditor from './APIEditor';
-
 import DynamicItems from './DynamicItems';
 
+import {throttle} from '../utils';
 //全局的Service
 const {ACTION_TYPE} = Service;
 
@@ -34,7 +34,10 @@ class Builder extends React.Component{
             interfaces:[],
             currentInterfaceIndex:null
         }
-        this.updateServer = this.updateServer.bind(this)
+        this.updateServer = this.updateServer.bind(this);
+        this._updateInterface = throttle((payload)=>{
+            Service.fetch(ACTION_TYPE.UPDATE_INTERFACE,payload);
+        },2000);
     }
     componentDidMount(){
         const {sid} = this.state.server;
@@ -77,27 +80,48 @@ class Builder extends React.Component{
         if(!currentServer){
             this.setState({
                 server:{sid:null},
-                interfaces:[],
-                currentInterfaceIndex:null
+                // interfaces:[],
+                // currentInterfaceIndex:null
             });
         }else{
             this.setState({
                 server:servers[currentServer]
             });
-            //查询并更新当前server的Interface列表
-            this.queryInterfaceAll(currentServer);
+            if(currentServer !== this.state.server.sid){
+                //查询并更新当前server的Interface列表
+                this.queryInterfaceAll(currentServer);
+            }
         }
     }
-    
+    updateInterface(payload){
+        let {id} = payload,
+            {interfaces} = this.state;
+        let temp = interfaces.map(item=>{
+            if(item.id === id){
+                return {...item,...payload}
+            }
+            return item;
+        });
+        this._updateInterface(payload);//debounce
+        this.setState({interfaces:temp})
+    }
     updateServer(payload){
         this.props.context.updateServer({...payload,sid:this.state.server.sid});
     }
     render(){
         const {interfaces,server,currentInterfaceIndex} = this.state;
-        if(!this.props.context.state.currentServer){
-            return null;;
+        // if(!this.props.context.state.currentServer){
+        //     return null;;
+        // }
+        console.log(currentInterfaceIndex);
+        let editorProps = {}
+        if(interfaces.length !=0){
+            editorProps = {...interfaces[currentInterfaceIndex]}
+        }else{
+            editorProps = {};
         }
-        return <div>
+        
+        return <div className={this.props.className}>
             <div className="m-left">
                 <ServerInfo {...server} update={this.updateServer}/>
                 <DynamicItems 
@@ -111,13 +135,11 @@ class Builder extends React.Component{
                     }}/>
                 </DynamicItems>
             </div>
-            {
-                currentInterfaceIndex !== null && 
-                <APIEditor 
-                    id={currentInterfaceIndex !==null ? interfaces[currentInterfaceIndex].id : null}
-                    onUpdate={(i)=>{}}
-                />
-            }
+            <APIEditor 
+                // {...interfaces[currentInterfaceIndex]}
+                {...editorProps}
+                onUpdate={(payload)=>{this.updateInterface(payload)}}
+            />
             
         </div>
     }

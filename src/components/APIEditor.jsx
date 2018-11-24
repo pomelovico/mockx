@@ -2,19 +2,24 @@ import React from 'react';
 
 import Tab,{TabPane} from './Tab';
 import DynamicItems from './DynamicItems';
-import Axios from 'axios';
 import Input from './Input';
+
+import {throttle,debounce} from '../utils';
 
 const {ACTION_TYPE} = Service;
 
 class APIEditor extends React.Component{
     constructor(props){
         super(props);
-        this.state = {}; 
-        this.handleRequestMethod = this.handleRequestMethod.bind(this);
+        this.state = {};
+        this.cache = {};
+        this._updateInterface = debounce((payload)=>{
+            Service.fetch(ACTION_TYPE.UPDATE_INTERFACE,payload);
+        },500);
     }
     componentDidMount(){
-        this.fetchAPIDetails(this.props.id);
+        let {id} = this.props;
+        id && this.queryInterfaceMore(id);
     }
     resolveParams(str,partten){
         return !str ? [] : str.split(partten).map(value=>{
@@ -24,30 +29,72 @@ class APIEditor extends React.Component{
             }
         });
     }
-    fetchAPIDetails(id){
+    queryInterfaceMore(id){
         Service.fetch(ACTION_TYPE.QUERY_INTERFACE_ONE,{id}).then(data=>{
             let req_params = this.resolveParams(data.req_params,'&'),
                 req_body = this.resolveParams(data.req_body,'&');
-            this.setState({...data,req_body,req_params});
+            let temp = {...data,req_body,req_params};
+            this.cache[temp.id] = temp;//缓存
+            this.setState(temp);
         });
-    }
-    handleRequestMethod(e){
-        this.setState({
-            method:e.target.value
-        })
     }
     componentWillReceiveProps(nextProps){
         if(this.state.id != nextProps.id){
-            this.fetchAPIDetails(nextProps.id);
+            let cache = this.cache[nextProps.id];
+            if(cache){
+                this.setState(cache);
+                return;
+            }
+            nextProps.id && this.queryInterfaceMore(nextProps.id);
         }
     }
     //字段，值，索引，操作（更新update，删除remove，添加add，同步数据库）
     updateAPI(filed,operation,index,value){
         //TODO
         console.log(filed,operation,index,value);
-        this.props.onUpdate(
-            
-        );
+        switch(operation){
+            case 'update':this.update(filed,index,value);break;
+            case 'add':this.add(filed);break;
+            case 'remove':this.remove(filed,index);
+        }
+    }
+    update(filed,index,value){
+        let temp = this.state[filed].map((item,key)=>{
+            if(key === index){
+                return {...item,value};
+            }
+            return item;
+        })
+        this.setState({
+            [filed]:temp
+        });
+        this._updateInterface({
+            [filed]:temp.map(t=>t.value).join('&'),
+            id:this.state.id
+        });
+    }
+    add(filed){
+        let arr = this.state[filed];
+        if(Object.prototype.toString.call(arr) !== '[object Array]'){
+            arr = [];
+        }
+        this.setState({
+            [filed]:arr.concat({enable:true,value:''})
+        });
+    }
+    remove(filed,index){
+        let arr = this.state[filed];
+        let filterd = arr.filter((item,key)=>{
+            return key !== index;
+        });
+        Service.fetch(ACTION_TYPE.UPDATE_INTERFACE,{
+            id:this.state.id,
+            [filed]:filterd.map(t=>t.value).join('&')
+        }).then(res=>{
+            this.setState({
+                [filed]:filterd
+            })
+        }).catch(()=>{})
     }
     //字段启用与关闭（程序应用状态，不同步数据库）
     handleSwitchEnabledFiled(filed,operation,index,enabled){
@@ -59,19 +106,22 @@ class APIEditor extends React.Component{
             [filed]:data
         });
     }
+    updateInterfaceBase(payload){
+        this.props.onUpdate(payload);
+    }
     render(){
-        if(!this.state.id){
+        if(!this.props.id){
             return <></>;
         }
         return <div className='m-right'>
             <div>
-                <select name="request-method" onChange={this.handleRequestMethod} value={this.state.method}>
+                <select name="request-method" onChange={(e)=>{this.updateInterfaceBase({id:this.state.id,method:e.target.value})}} value={this.props.method}>
                     <option value="get">GET</option>
                     <option value="post">POST</option>
                     <option value="head">HEAD</option>
                     <option value="put">PUT</option>
                 </select>
-                / <Input value={this.state.path} onUpdate={()=>{}}/>{/* <input type="text" name='path' value='mockme'/> */}
+                / <Input value={this.props.path} onUpdate={(value)=>{this.updateInterfaceBase({id:this.state.id,path:value})}}/>
             </div>
             <div>
                 <Tab defaultActiveKey='1'>
@@ -83,7 +133,7 @@ class APIEditor extends React.Component{
                                         data={this.state.req_params}
                                         onRemove={index=>this.updateAPI('req_params','remove',index)}
                                         onAdd={()=>this.updateAPI('req_params','add')}
-                                        onUpdate={(index,value)=>this.updateAPI('req_params','update',index,value)}
+                                        onUpdate={(value,index)=>this.updateAPI('req_params','update',index,value)}
                                         onCheck={(index,checked)=> this.handleSwitchEnabledFiled('req_params','update',index,checked)}
                                     >
                                         <Input />
@@ -94,7 +144,7 @@ class APIEditor extends React.Component{
                                         data={this.state.req_body} 
                                         onRemove={index=>this.updateAPI('req_body','remove',index)}
                                         onAdd={()=>this.updateAPI('req_body','add')}
-                                        onUpdate={(index,value)=>this.updateAPI('req_body','update',index,value)}
+                                        onUpdate={(value,index)=>this.updateAPI('req_body','update',index,value)}
                                         onCheck={(index,checked)=> this.handleSwitchEnabledFiled('req_body','update',index,checked)}
                                     >
                                         <Input />

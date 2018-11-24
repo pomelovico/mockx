@@ -3,11 +3,14 @@ import {connect} from '../connect';
 
 import Builder from './Builder';
 import Logger from './Logger';
+import classNames from 'classnames';
 
 
 function Main(props){
+    let {panel} = props.context.state;
     return <div style={{'marginLeft':'100px'}}>
-        {props.context.state.panel == 'builder' ? <Builder/> : <Logger/>}
+        <Builder className={classNames('content',{active:panel == 'builder'})}/> 
+        <Logger className={classNames('content',{active:panel == 'logger'})}/>
     </div>
 }
 
