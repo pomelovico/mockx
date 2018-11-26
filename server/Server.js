@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+var net = require('net');
 
 class Server{
     constructor(info){
@@ -38,7 +39,6 @@ class Server{
             let {method,res_body} = interfaces[path];
             method = method.toLowerCase();
             app[method] && app[method](baseInfo.prefix+path,(req,res)=>{
-                console.log(res_body);
                 res.send(res_body);
             })
         }
@@ -46,22 +46,36 @@ class Server{
         this.status = 0;
         return this;
     }
+    // 检测端口是否被占用
+    portIsOccupied (port) {
+        return new Promise((resolve,reject)=>{
+            // 创建服务并监听该端口
+            var server = net.createServer().listen(port)
+            server.on('listening', function () { // 执行这块代码说明端口未被占用
+                server.close() // 关闭服务
+                resolve();
+            })
+            server.on('error', ()=>{
+                reject('port occupied');
+            });
+        });
+    }
     start(){
         return new Promise((resolve,reject)=>{
-            this.listener = this.app.listen(this.info.baseInfo.port,(err)=>{
-                if(err){
-                    //TODO 启动失败
-                    reject(err);
-                }else{
-                    resolve()
+            let {port} = this.info.baseInfo;
+            this.portIsOccupied(port).then(()=>{
+                this.listener = this.app.listen(port,()=>{
+                    resolve();
                     this.status = 1;
-                }
-            });
+                });
+            },(err)=>{
+                reject(err);
+            })
         })
     }
     stop(){
-        console.log(this.app);
         if(this.status == 1){
+            console.log('stop server');
             this.listener.close();
             this.status = 0;
         }

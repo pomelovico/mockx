@@ -66,6 +66,10 @@ class ServerManager{
         let server = this.servers[sid];
         if(server){
             return server.status == 0 && server.start();
+        }else{
+            return this.create(sid).then(()=>{
+                return this.run(sid);
+            });
         }
         return Promise.resolve(true);
     }

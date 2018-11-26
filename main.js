@@ -1,5 +1,8 @@
 
-const {app, BrowserWindow,ipcMain,Menu,Notification} = require('electron')
+const {app, BrowserWindow,ipcMain,Menu,Notification} = require('electron');
+
+const ServerManager = require('./server/ServerManager');
+const service = require('./server/service');
 
 let mainWindow
 function createWindow () {
@@ -11,6 +14,9 @@ function createWindow () {
     titleBarStyle:'customButtonsOnHover',
     autoHideMenuBar: true
   });
+
+  const serverManager = new ServerManager(service);
+
   let webContents = mainWindow.webContents;
   
   mainWindow.loadFile('./build/index.html');
@@ -21,9 +27,7 @@ function createWindow () {
   mainWindow.on('closed', function () {
     mainWindow = null
   });
-
   mainWindow.webContents.openDevTools();
-
 }
 
 app.on('ready', createWindow)

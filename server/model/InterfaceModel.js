@@ -2,7 +2,7 @@ class InterfaceModel{
     constructor(db){
         this.db = db;
     }
-    create(sid,method = 'GET', path = 'mock'){
+    create(sid,method = 'get', path = 'mock'){
         const id = `i_${+(new Date())}_${Math.random().toString(32).substr(2,5)}`;
         const sql = `INSERT INTO  interface (id,sid,method,path) VALUES('${id}','${sid}','${method}','${path}')`;
         return this.db.run(sql).then(res=>{return {...res,sid,id,method,path}});

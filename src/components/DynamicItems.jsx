@@ -51,10 +51,10 @@ class DynamicItems extends React.Component{
                 checked={item.enable}
                 onChange={e => this.props.onSwitchEnable(index,e.target.checked)}
             /> */}
-            {enableCheck !== false ? <CheckBox 
+            {/* {enableCheck !== false ? <CheckBox 
                 checked={item.enable} 
                 onChange={checked => this.props.onCheck(index,checked)} 
-            /> : null}
+            /> : null} */}
             
             {React.cloneElement(child,
                 {

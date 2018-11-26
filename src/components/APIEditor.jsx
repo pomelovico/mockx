@@ -36,22 +36,22 @@ class APIEditor extends React.Component{
             let temp = {...data,req_body,req_params};
             this.cache[temp.id] = temp;//缓存
             this.setState(temp);
+        }).catch(e=>{
+            console.log(e);
         });
     }
     componentWillReceiveProps(nextProps){
         if(this.state.id != nextProps.id){
             let cache = this.cache[nextProps.id];
-            if(cache){
-                this.setState(cache);
-                return;
-            }
+            // if(cache){
+            //     this.setState(cache);
+            //     return;
+            // }
             nextProps.id && this.queryInterfaceMore(nextProps.id);
         }
     }
     //字段，值，索引，操作（更新update，删除remove，添加add，同步数据库）
     updateAPI(filed,operation,index,value){
-        //TODO
-        console.log(filed,operation,index,value);
         switch(operation){
             case 'update':this.update(filed,index,value);break;
             case 'add':this.add(filed);break;
@@ -70,7 +70,8 @@ class APIEditor extends React.Component{
         });
         this._updateInterface({
             [filed]:temp.map(t=>t.value).join('&'),
-            id:this.state.id
+            id:this.state.id,
+            sid:this.state.sid
         });
     }
     add(filed){
@@ -89,6 +90,7 @@ class APIEditor extends React.Component{
         });
         Service.fetch(ACTION_TYPE.UPDATE_INTERFACE,{
             id:this.state.id,
+            sid:this.state.sid,
             [filed]:filterd.map(t=>t.value).join('&')
         }).then(res=>{
             this.setState({
@@ -107,7 +109,7 @@ class APIEditor extends React.Component{
         });
     }
     updateInterfaceBase(payload){
-        this.props.onUpdate(payload);
+        this.props.onUpdate({...payload,sid:this.state.sid});
     }
     render(){
         if(!this.props.id){
@@ -140,7 +142,7 @@ class APIEditor extends React.Component{
                                     </DynamicItems>
                                 </TabPane>
                                 <TabPane tab='Body' key='2'>
-                                <DynamicItems 
+                                <DynamicItems
                                         data={this.state.req_body} 
                                         onRemove={index=>this.updateAPI('req_body','remove',index)}
                                         onAdd={()=>this.updateAPI('req_body','add')}

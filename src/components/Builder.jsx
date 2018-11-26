@@ -5,18 +5,18 @@ import Input from './Input';
 import APIEditor from './APIEditor';
 import DynamicItems from './DynamicItems';
 
-import {throttle} from '../utils';
+import {throttle,debounce} from '../utils';
 //全局的Service
 const {ACTION_TYPE} = Service;
 
 function APIItem(props){
     return  <span key={props.id} onClick={()=>{props.onSwitchAPI(props.index)}}>
-            {props.method} / {props.path} 
+            {props.method.toUpperCase()} / {props.path} 
         </span>
 }
 function ServerInfo({name,port,prefix,...props}){
     return <>
-        <div><Input  name='server-name' value={name} onUpdate={(value)=>{props.update({name:value})}}  /> <button>run</button></div>
+        <div><Input  name='server-name' value={name} onUpdate={(value)=>{props.update({name:value})}}  /> <button onClick={()=>{props.onRunBtnClick()}}>run</button></div>
         <div>
             localhost:<Input name='port' value={port} onUpdate={(value)=>{props.update({port:value})}} /> 
             / 
@@ -35,7 +35,7 @@ class Builder extends React.Component{
             currentInterfaceIndex:null
         }
         this.updateServer = this.updateServer.bind(this);
-        this._updateInterface = throttle((payload)=>{
+        this._updateInterface = debounce((payload)=>{
             Service.fetch(ACTION_TYPE.UPDATE_INTERFACE,payload);
         },2000);
     }
@@ -54,8 +54,8 @@ class Builder extends React.Component{
     }
     removeInterface(index){
         let {interfaces,currentInterfaceIndex} = this.state;
-        let id = interfaces[index].id;
-        Service.fetch(ACTION_TYPE.REMOVE_INTERFACE,{id}).then(res=>{
+        let {id,sid} = interfaces[index];
+        Service.fetch(ACTION_TYPE.REMOVE_INTERFACE,{id,sid}).then(res=>{
             let rest = interfaces.filter((item,key)=>{
                 return index != key;
             });
@@ -108,12 +108,11 @@ class Builder extends React.Component{
     updateServer(payload){
         this.props.context.updateServer({...payload,sid:this.state.server.sid});
     }
+    handleRunBtnClick(){
+        
+    }
     render(){
         const {interfaces,server,currentInterfaceIndex} = this.state;
-        // if(!this.props.context.state.currentServer){
-        //     return null;;
-        // }
-        console.log(currentInterfaceIndex);
         let editorProps = {}
         if(interfaces.length !=0){
             editorProps = {...interfaces[currentInterfaceIndex]}
@@ -123,7 +122,7 @@ class Builder extends React.Component{
         
         return <div className={this.props.className}>
             <div className="m-left">
-                <ServerInfo {...server} update={this.updateServer}/>
+                <ServerInfo {...server} update={this.updateServer} onRunBtnClick={()=>{}}/>
                 <DynamicItems 
                     data={interfaces} 
                     enableCheck={false}
