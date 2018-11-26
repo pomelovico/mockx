@@ -14,6 +14,10 @@ class InterfaceController{
         let {sid} = req.query;
         this.model.getAll(sid).then(successReturn(res),failReturn(res,801));
     }
+    queryInterfaceAllMore(req,res){
+        let {sid} = req.query;
+        this.model.getAllMore(sid).then(successReturn(res),failReturn(res,801));
+    }
     addInterface(req,res){
         const {sid} = req.body;
         if(!sid){

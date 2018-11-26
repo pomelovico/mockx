@@ -29,6 +29,7 @@ const ACTION_TYPE = {
 
     QUERY_SERVER:"QUERY_SERVER",
     QUERY_INTERFACE_ALL:"QUERY_ALL_INTERFACE_ALL",
+    QUERY_INTERFACE_ALL_MORE:"QUERY_INTERFACE_ALL_MORE",
     QUERY_INTERFACE_DETAIL:"QUERY_INTERFACE_DETAIL"
 }
 
@@ -75,6 +76,7 @@ const _updateInterface = handleInterface((payload,im)=>{
 })
 
 const _queryInterfaceAll = handleInterface(({sid},im) => im.getAll(sid));
+const _queryInterfaceAllMore = handleInterface(({sid},im) => im.getAllMore(sid));
 const _queryInterfaceDetail = handleInterface(({id},im) => im.get(id) );
 
 
@@ -96,7 +98,7 @@ function fetch(actionType,payload){
         case ACTION_TYPE.QUERY_SERVER : return _queryServer(payload);
 
         case ACTION_TYPE.QUERY_INTERFACE_ALL : return _queryInterfaceAll(payload);
-
+        case ACTION_TYPE.QUERY_INTERFACE_ALL_MORE : return _queryInterfaceAllMore(payload);
         case ACTION_TYPE.QUERY_INTERFACE_DETAIL : return _queryInterfaceDetail(payload);
     }
 }

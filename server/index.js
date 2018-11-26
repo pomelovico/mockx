@@ -11,9 +11,16 @@ const InterfaceController = require('./controller/InterfaceController');
 const serverController = new ServerController();
 const interfaceController = new InterfaceController();
 
-function logger(req,res,next){
+function listenChange(req,res,next){
+    let {method,path} = req,
+        reg=/(interface)|(server)/;
+    if(method == 'POST' && reg.test(path)){
+        //TODO更新对应的Server
+        console.log(req.body.sid);
+    }
     next();
 }
+
 app.use((req,res,next)=>{
     res.setHeader
     res.setHeader("Access-Control-Allow-Origin","*");
@@ -21,7 +28,7 @@ app.use((req,res,next)=>{
     res.setHeader("Access-Control-Allow-Headers","*");
     next();
 })
-app.use(logger);
+app.use(listenChange);
 
 //Routes
 

@@ -10,6 +10,9 @@ class InterfaceModel{
     get(id){
         return this.db.get(`SELECT * FROM interface WHERE id='${id}'`);
     }
+    getAllMore(sid){
+        return this.db.all(`SELECT * FROM interface WHERE sid='${sid}'`);
+    }
     getAll(sid){
         return this.db.all(`
         SELECT 
@@ -34,7 +37,6 @@ class InterfaceModel{
         if(!setStrArr.length){
             return Promise.resolve(true);
         }
-        console.log(setStrArr);
         const sql = `UPDATE interface SET ${setStrArr.join(',')} WHERE id = '${id}' `;
         return this.db.run(sql);
     }
