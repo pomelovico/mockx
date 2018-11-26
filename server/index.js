@@ -21,10 +21,10 @@ function listenChange(req,res,next){
     if(method == 'POST' && reg.test(path)){
         //TODO更新对应的Server
         let {id,sid} = req.body;
-        setTimeout(()=>{
+        res.on('close',()=>{
             serverManager.update(sid,id);
             console.log('updating server');
-        },500);
+        })
     }
     next();
 }

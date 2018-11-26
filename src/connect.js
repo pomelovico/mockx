@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 
 export const Context = React.createContext({});
 const {ACTION_TYPE} = Service;
@@ -88,10 +87,10 @@ function withContext(Component){
                 });
             })
         }
-        updateServer(payload){
+        updateServer(payload,asyncWithRemote = true){
             let {sid} = payload,
                 {servers} = this.state;
-            this._updateServer(payload);
+                asyncWithRemote && this._updateServer(payload);
             let s = {};
             for(let key in  servers){
                 let server = servers[key];

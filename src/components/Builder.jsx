@@ -14,9 +14,12 @@ function APIItem(props){
             {props.method.toUpperCase()} / {props.path} 
         </span>
 }
-function ServerInfo({name,port,prefix,...props}){
+function ServerInfo({name,port,prefix,status,...props}){
     return <>
-        <div><Input  name='server-name' value={name} onUpdate={(value)=>{props.update({name:value})}}  /> <button onClick={()=>{props.onRunBtnClick()}}>run</button></div>
+        <div>
+            <Input  name='server-name' value={name} onUpdate={(value)=>{props.update({name:value})}}  /> 
+            <button onClick={()=>{props.onRunBtnClick()}}>{status ? 'stop' : 'run'}</button>
+        </div>
         <div>
             localhost:<Input name='port' value={port} onUpdate={(value)=>{props.update({port:value})}} /> 
             / 
@@ -38,6 +41,7 @@ class Builder extends React.Component{
         this._updateInterface = debounce((payload)=>{
             Service.fetch(ACTION_TYPE.UPDATE_INTERFACE,payload);
         },2000);
+        this.handleRunBtnClick = this.handleRunBtnClick.bind(this);
     }
     componentDidMount(){
         const {sid} = this.state.server;
@@ -105,11 +109,16 @@ class Builder extends React.Component{
         this._updateInterface(payload);//debounce
         this.setState({interfaces:temp})
     }
-    updateServer(payload){
-        this.props.context.updateServer({...payload,sid:this.state.server.sid});
+    updateServer(payload,async){
+        this.props.context.updateServer({...payload,sid:this.state.server.sid},async);
     }
     handleRunBtnClick(){
-        
+        // debugger;
+        let {status,sid} = this.state.server;
+        status = !status;
+        this.updateServer({status},false);
+
+        Service.fetch("OPREATION",{sid,op:status ? 'start' : 'stop'});
     }
     render(){
         const {interfaces,server,currentInterfaceIndex} = this.state;
@@ -122,7 +131,7 @@ class Builder extends React.Component{
         
         return <div className={this.props.className}>
             <div className="m-left">
-                <ServerInfo {...server} update={this.updateServer} onRunBtnClick={()=>{}}/>
+                <ServerInfo {...server} update={this.updateServer} onRunBtnClick={this.handleRunBtnClick}/>
                 <DynamicItems 
                     data={interfaces} 
                     enableCheck={false}

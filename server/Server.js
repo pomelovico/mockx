@@ -66,6 +66,7 @@ class Server{
             this.portIsOccupied(port).then(()=>{
                 this.listener = this.app.listen(port,()=>{
                     resolve();
+                    console.log('start sever...');
                     this.status = 1;
                 });
             },(err)=>{
@@ -75,7 +76,7 @@ class Server{
     }
     stop(){
         if(this.status == 1){
-            console.log('stop server');
+            console.log('stop server..');
             this.listener.close();
             this.status = 0;
         }

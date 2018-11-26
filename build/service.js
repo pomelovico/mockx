@@ -7,10 +7,19 @@ module.exports =  (function({ACTION_TYPE,fetch}){
     let reg = /(UPDATE)|(ADD)|(REMOVE)/;
 
     function _fetch(type,payload){
+        if(/(OPREATION)/.test(type)){
+            let {op,sid} = payload;
+            switch(op){
+                case 'start':return serverManager.run(sid);
+                case 'stop':return serverManager.stop(sid);
+            }
+            return;
+        }
         return fetch(type,payload).then(res=>{
             if(reg.test(type)){
                 //截获更新操作,通知serverManager更新
-                console.log('updating server');
+                console.log(type);
+                console.log('updating server running status...');
                 let {sid,id} = payload;
                 serverManager.update(sid,id);
             }

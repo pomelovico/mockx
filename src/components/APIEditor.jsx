@@ -21,32 +21,30 @@ class APIEditor extends React.Component{
         let {id} = this.props;
         id && this.queryInterfaceMore(id);
     }
-    resolveParams(str,partten){
-        return !str ? [] : str.split(partten).map(value=>{
-            return {
-                value,
-                enable:true
+    resolveParams(data,partten){
+        let keys = ['req_params',"req_header",'req_body','res_header'];
+        for(let key in data){
+            if(~keys.indexOf(key)){
+                let str = data[key];
+                data[key] = !str ? [] : str.split(partten).map(value=>{
+                    return {
+                        value,
+                        enable:true
+                    }
+                });
             }
-        });
+        }
+        return data;
     }
     queryInterfaceMore(id){
         Service.fetch(ACTION_TYPE.QUERY_INTERFACE_ONE,{id}).then(data=>{
-            let req_params = this.resolveParams(data.req_params,'&'),
-                req_body = this.resolveParams(data.req_body,'&');
-            let temp = {...data,req_body,req_params};
-            this.cache[temp.id] = temp;//缓存
-            this.setState(temp);
+            this.setState(this.resolveParams(data));
         }).catch(e=>{
             console.log(e);
         });
     }
     componentWillReceiveProps(nextProps){
         if(this.state.id != nextProps.id){
-            let cache = this.cache[nextProps.id];
-            // if(cache){
-            //     this.setState(cache);
-            //     return;
-            // }
             nextProps.id && this.queryInterfaceMore(nextProps.id);
         }
     }
@@ -59,17 +57,20 @@ class APIEditor extends React.Component{
         }
     }
     update(filed,index,value){
-        let temp = this.state[filed].map((item,key)=>{
-            if(key === index){
-                return {...item,value};
-            }
-            return item;
-        })
+        let temp = value;
+        if(filed !='res_body'){
+            temp = this.state[filed].map((item,key)=>{
+                if(key === index){
+                    return {...item,value};
+                }
+                return item;
+            })
+        }
         this.setState({
             [filed]:temp
         });
         this._updateInterface({
-            [filed]:temp.map(t=>t.value).join('&'),
+            [filed]: Array.isArray(temp)?temp.map(t=>t.value).join('&'):temp,
             id:this.state.id,
             sid:this.state.sid
         });
@@ -142,7 +143,7 @@ class APIEditor extends React.Component{
                                     </DynamicItems>
                                 </TabPane>
                                 <TabPane tab='Body' key='2'>
-                                <DynamicItems
+                                    <DynamicItems
                                         data={this.state.req_body} 
                                         onRemove={index=>this.updateAPI('req_body','remove',index)}
                                         onAdd={()=>this.updateAPI('req_body','add')}
@@ -153,7 +154,15 @@ class APIEditor extends React.Component{
                                     </DynamicItems>
                                 </TabPane>
                                 <TabPane tab='Headers' key='3'>
-                                    input header:<input type='text'/>
+                                    <DynamicItems 
+                                        data={this.state.req_header}
+                                        onRemove={index=>this.updateAPI('req_header','remove',index)}
+                                        onAdd={()=>this.updateAPI('req_header','add')}
+                                        onUpdate={(value,index)=>this.updateAPI('req_header','update',index,value)}
+                                        onCheck={(index,checked)=> this.handleSwitchEnabledFiled('req_header','update',index,checked)}
+                                    >
+                                        <Input />
+                                    </DynamicItems>
                                 </TabPane>
                             </Tab>
                         </div>
@@ -162,10 +171,21 @@ class APIEditor extends React.Component{
                         <div>
                             <Tab defaultActiveKey="1">
                                 <TabPane tab='Body' key='1'>
-                                    input body:<input type='text'/>
+                                    <textarea 
+                                        value={this.state.res_body || ''}
+                                        onChange={ e => {this.updateAPI('res_body','update',0,e.target.value)}}
+                                    ></textarea>
                                 </TabPane>
                                 <TabPane tab='Headers' key='2'>
-                                    input header:<input type='text'/>
+                                    <DynamicItems 
+                                        data={this.state.res_header}
+                                        onRemove={index=>this.updateAPI('res_header','remove',index)}
+                                        onAdd={()=>this.updateAPI('res_header','add')}
+                                        onUpdate={(value,index)=>this.updateAPI('res_header','update',index,value)}
+                                        onCheck={(index,checked)=> this.handleSwitchEnabledFiled('res_header','update',index,checked)}
+                                    >
+                                        <Input />
+                                    </DynamicItems>
                                 </TabPane>
                             </Tab>
                         </div>
