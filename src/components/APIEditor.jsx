@@ -3,6 +3,7 @@ import React from 'react';
 import Tab,{TabPane} from './Tab';
 import DynamicItems from './DynamicItems';
 import Input from './Input';
+import Selector,{Option} from './Selector';
 
 import {throttle,debounce} from '../utils';
 
@@ -38,7 +39,7 @@ class APIEditor extends React.Component{
     }
     queryInterfaceMore(id){
         Service.fetch(ACTION_TYPE.QUERY_INTERFACE_ONE,{id}).then(data=>{
-            this.setState(this.resolveParams(data));
+            this.setState(this.resolveParams(data,'&'));
         }).catch(e=>{
             console.log(e);
         });
@@ -117,21 +118,21 @@ class APIEditor extends React.Component{
             return <></>;
         }
         return <div className='m-right'>
-            <div>
-                <select name="request-method" onChange={(e)=>{this.updateInterfaceBase({id:this.state.id,method:e.target.value})}} value={this.props.method}>
-                    <option value="get">GET</option>
-                    <option value="post">POST</option>
-                    <option value="head">HEAD</option>
-                    <option value="put">PUT</option>
-                </select>
-                / <Input value={this.props.path} onUpdate={(value)=>{this.updateInterfaceBase({id:this.state.id,path:value})}}/>
+            <div style={{paddingBottom:'15px',borderBottom:"1px solid #345"}}>
+                <Selector defaultValue="get" onChange={value=>{this.updateInterfaceBase({id:this.state.id,method:value.toLowerCase()})}}>
+                    <Option value="get" >GET</Option>
+                    <Option value="post">POST</Option>
+                    <Option value="put">PUT</Option>
+                    <Option value="delete">DELETE</Option>
+                </Selector>
+                 &nbsp;&nbsp;&nbsp;&nbsp;/ <Input className='path' value={this.props.path} onUpdate={(value)=>{this.updateInterfaceBase({id:this.state.id,path:value})}}/>
             </div>
-            <div>
+            <div class='res-req'>
                 <Tab defaultActiveKey='1'>
                     <TabPane tab='REQUEST' key='1'>
-                        <div>
+                        <div className='sub-tab'>
                             <Tab defaultActiveKey="1">
-                                <TabPane tab='Params' key='1'>
+                                <TabPane tab='params' key='1'>
                                     <DynamicItems 
                                         data={this.state.req_params}
                                         onRemove={index=>this.updateAPI('req_params','remove',index)}
@@ -142,7 +143,7 @@ class APIEditor extends React.Component{
                                         <Input />
                                     </DynamicItems>
                                 </TabPane>
-                                <TabPane tab='Body' key='2'>
+                                <TabPane tab='body' key='2'>
                                     <DynamicItems
                                         data={this.state.req_body} 
                                         onRemove={index=>this.updateAPI('req_body','remove',index)}
@@ -153,7 +154,7 @@ class APIEditor extends React.Component{
                                         <Input />
                                     </DynamicItems>
                                 </TabPane>
-                                <TabPane tab='Headers' key='3'>
+                                <TabPane tab='headers' key='3'>
                                     <DynamicItems 
                                         data={this.state.req_header}
                                         onRemove={index=>this.updateAPI('req_header','remove',index)}
@@ -168,15 +169,16 @@ class APIEditor extends React.Component{
                         </div>
                     </TabPane>
                     <TabPane tab='RESPONE' key='2'>
-                        <div>
+                        <div className='sub-tab'>
                             <Tab defaultActiveKey="1">
-                                <TabPane tab='Body' key='1'>
+                                <TabPane tab='body' key='1'>
                                     <textarea 
+                                        className='res_body-textarea'
                                         value={this.state.res_body || ''}
                                         onChange={ e => {this.updateAPI('res_body','update',0,e.target.value)}}
                                     ></textarea>
                                 </TabPane>
-                                <TabPane tab='Headers' key='2'>
+                                <TabPane tab='headers' key='2'>
                                     <DynamicItems 
                                         data={this.state.res_header}
                                         onRemove={index=>this.updateAPI('res_header','remove',index)}

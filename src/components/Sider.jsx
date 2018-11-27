@@ -1,6 +1,13 @@
 import React from 'react';
 import {connect} from '../connect';
 
+function ServerIntem(){
+    return <li key={sid} className={ sid == this.props.context.state.currentServer ? 'focus' : ""}>
+    <span onClick={()=>this.switchServer(sid)}>{name}</span>
+    <button onClick={()=>{this.removeServer(sid)}}>x</button>
+</li>
+}
+
 class Sider extends React.Component{
     constructor(props,context){
         super(props,context);
@@ -22,9 +29,9 @@ class Sider extends React.Component{
         for(var key in servers){
             let server = servers[key];
             const {sid,name} = server;
-            frags.push(<li key={sid} className={ sid == this.props.context.state.currentServer ? 'focus' : ""}>
+            frags.push(<li key={sid} className={ sid == this.props.context.state.currentServer ? 'dynamic-item active' : "dynamic-item"}>
             <span onClick={()=>this.switchServer(sid)}>{name}</span>
-            <button onClick={()=>{this.removeServer(sid)}}>x</button>
+            <button className='btn btn-remove' onClick={()=>{this.removeServer(sid)}}>+</button>
         </li>);
         }
         return frags.length ? <ul>{frags}</ul> : null;
@@ -32,8 +39,10 @@ class Sider extends React.Component{
     render(){
         const {state,addServer} = this.props.context;
         return (<div className='mock-sider'>
-                {this.buildServerList(state.servers)}
-                <button onClick={(()=>{addServer()})}>Add</button>
+                <div className="dynamic-list">
+                    {this.buildServerList(state.servers)}
+                    <button className='btn btn-add' onClick={(()=>{addServer()})}>+</button>
+                </div>
         </div>
         )
     }

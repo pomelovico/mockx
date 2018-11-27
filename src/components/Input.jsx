@@ -38,6 +38,7 @@ export default class Input extends React.Component{
                 onChange={this.handleInputChange}
                 value={this.state.value || ''}
                 onKeyDown={this.handleKeyDown}
+                className={this.props.className +' input'}
             />
     }
 }

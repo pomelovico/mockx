@@ -1,35 +1,453 @@
-body{
+html,body{
+    height: 100%;
+    background-color:#1e252c;
+    font-size: 14px;
     margin:0;
     padding:0;
-    font-family: "Arial";
-    color:#345;
+    font-family: 'Helvetica' ,"sans-serif";
+    color:#fff;
+    min-width: 800px;
 }
+body *{
+    /* transition: all .3s; */
+    box-sizing: border-box;
+}
+/* 滚动条样式 */
+body *::-webkit-scrollbar{
+    width: 5px;
+    height:5px
+}
+body *::-webkit-scrollbar-thumb{
+    border-radius: 10px;
+    background-color: #345;
+}
+body *::-webkit-scrollbar-track{
+    border-radius: 10px;
+    background-color: #111;
+}
+
+ul,li{
+    list-style: none;
+    margin:0;
+    padding:0;
+}
+/*button*/
+.btn{
+    border:none;
+    outline: none;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: 4px;
+    padding: 0.2rem 0.25rem; 
+}
+.btn ,
+.dynamic-list .dynamic-item,
+.nav .nav-item,
+.mock-tab .tab-head,
+.selector .drop .option,
+.selector{
+    cursor: pointer;
+}
+
+.input{
+    background-color: transparent;
+    outline: none;
+    border: none;
+    color:#ccc;
+}
+
+/* Arrow */
+
+.arrow{
+    position: relative;
+}
+.arrow:before{
+    content:'';
+    display: block;
+    position: absolute;
+    top:0;
+    left:0;
+    width: 8px;
+    height: 8px;
+    border-right:1px solid #fff;
+    border-top:1px solid #fff;
+    transition: all .25s;
+}
+.arrow.up:before{transform: rotate(-45deg) translate(-2px, 5px);}
+.arrow.down:before{transform: rotate(135deg) }
+
+/*Selector*/
+.selector{
+    display: inline-block;
+    position: relative;
+    min-width: 65px;
+    color:#ccc;
+}
+.selector .drop{
+    position: absolute;
+    background-color: #fff;
+    color: #345;
+    z-index: 999;
+    border-radius: 4px;
+}
+.selector .drop .option{
+    display: block;
+    padding: 0.75rem 0.45rem;
+}
+.selector .arrow{
+    margin-left: 9px;
+}
+
+/*Dynamic List*/
+.dynamic-list{
+    width: 100%;
+
+}
+.dynamic-list .dynamic-item{
+    position: relative;
+}
+.dynamic-list .dynamic-item > span{
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 80%;
+    height: 100%;
+    line-height: 1;
+    padding: 0.75rem 0;
+}
+.dynamic-item .btn-remove{
+    position: absolute;
+    right:5px;
+    top:50%;
+    padding:0;
+    transform: scale(1);
+    transform: translateY(-50%) rotate(45deg) scale(0);
+    background-color: transparent;
+    color:#fa8b48;
+    font-size: 0;
+    width: 0.75rem;
+    height: 20px;
+    width: 12px;
+    transition: all 0.25s;
+}
+.dynamic-item .btn-remove:before,
+.dynamic-item .btn-remove:after{
+    content: '';
+    font-size: 1.2rem;
+    border-top: 1px solid #f53c3c;
+    line-height: 0;
+    display: block;
+    position: absolute;
+    top: 50%;;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    
+}
+.dynamic-item .btn-remove:after{
+    transform: rotate(90deg);
+}
+
+.dynamic-item:hover .btn-remove{
+    transform: translateY(-50%) rotate(45deg) scale(1);
+    transition: all 0.25s;
+}
+
+
+.dynamic-list .btn-add{
+    position: relative;
+    color:#fff;
+    font-size: 0;
+    width: 20px;
+    height: 20px;
+    padding: 0.25rem;
+    /* background-color: #345; */
+    background-color: transparent
+    /* padding: 0.2rem 0.75rem; */
+    
+}
+.dynamic-list .btn-add:before,
+.dynamic-list .btn-add:after{
+    content: '';
+    display: block;
+    width: 0.75rem;
+    border-top:1px solid #dedede;
+    position: absolute;
+    top:10px;
+}
+.dynamic-list .btn-add:after{
+    transform: rotate(90deg);
+}
+
+
+/*Tab TabPane*/
+.mock-tab{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.mock-tab .mock-tab-head{
+    color: #aaa;
+    height: 3.5rem;
+    display: flex;
+    flex-shrink: 0;
+    background-color: #1e252c;
+}
+.mock-tab .tab-head{
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-right: 1.5rem;
+}
+.mock-tab .tab-head.focus:after{
+    content:'';
+    display: block;
+    width: 100%;
+    height: 1px;
+    /* background-color: #5fb9db; */
+    border-top-width:1px;
+    border-top-style:solid;  
+    position: absolute;
+    bottom: 0;
+    
+}
+
 
 .mock-tab .tab-body{
     display: none;
+    background-color:transparent;
 }
 .mock-tab .tab-body.active{
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 .mock-tab .tab-head.focus{
-    font-weight: bold;
+    color:#a1f5f8;
 }
 
-.m-left{
-    width: 300px;
+/*Header*/
+#header{
+    overflow: hidden;
+    padding: 0.5rem;
+    position: relative;
+    text-align: center
+}
+#logo{
     float: left;
+    font-size: 2rem;
+    color: #f7484b;
 }
-.m-right{
-    margin-left: 300px;
+#header .nav{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    padding-bottom: 15px;
 }
+#header .nav .nav-item{
+    display: inline-block;
+    padding: 0 0.5rem;
+    position: relative;
+    color: #aaa;
+}
+#header .nav .nav-item.active{
+    color: #fff;
+}
+#header .nav .nav-item.active:after{
+    content: '';
+    display: block;
+    left:0;
+    bottom:-15px;
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+}
+
+/*Sider*/
 .mock-sider{
-    float: left;
-    width:140px;
+    background-color: #131920;
+}
+.mock-sider .dynamic-item{
+    padding-left: 15px;
+    padding-right: 15px;
+    color: #393e43;
+}
+.mock-sider .dynamic-item > span{
+    padding: 1.25rem 0;
+}
+.mock-sider .dynamic-item.active,
+.mock-sider .dynamic-item:hover{
+    background-color: #1e252c;
+    color: #a1f5f8;
+}
+.mock-sider .btn-add{
+    margin-top:20px;
+    margin-left:50%;
+    transform: translateX(-50%); 
 }
 
-.content{
-    display: none;
+/* Main */
+.mock-main .server-info,
+.mock-main .port-prefix{
+    padding: 1rem 0;
+    border-bottom: 1px solid #37414b;
 }
-.content.active{
-    display: block
+
+.mock-main .m-left .input {
+    font-size: 1.1rem;
+    color: #ccc;
+
+}
+.mock-main .server-info .input-server-name{
+    width: 75%;
+}
+.mock-main .server-info .btn-exec{
+    width: 18%;
+    margin-left: 16%;
+    font-size: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: transparent;
+}
+.mock-main .server-info .btn.stopped::before{
+    content: '';
+    display: block;
+    height: 0px;
+    border-right: none;
+    border-left: 10px solid #2bc62b;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent
+}
+.mock-main .server-info .btn.running::before{
+    content: '';
+    display: block;
+    height: 16px;
+    border:2px solid  #fa8b48;
+    border-top:none;
+    border-bottom: none;
+}
+.mock-main .port-prefix .input{
+    width: 30%;
+    padding-left: 0.25rem;
+}
+.mock-main .port-prefix .input.port{ width:55px;}
+
+/*API LIST*/
+.mock-main .api{
+    display: flex;
+    padding-top:1rem;
+    position: relative;
+    margin-left: -15px;
+    margin-right: -15px;
+    color: #999;
+    font-size: 0.75rem;
+    flex-basis: 100%;
+    flex-grow: 1;
+    flex-direction: column;
+}
+.mock-main .api .btn-add{
+    position: absolute;
+    top:0.75rem;
+    right:18px;
+}
+.mock-main .api .dynamic-list{
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    flex-grow: 1;
+    overflow-x: hidden;
+}
+
+.mock-main .api .dynamic-item{
+    padding: 0rem 15px;
+    font-size: 0.85rem;
+}
+.mock-main .api .dynamic-item.active{ background-color: #232f3b;}
+
+.mock-main .api .dynamic-item .method-name{
+    width: 50px;
+    display: inline-block;
+}
+.mock-main .api .dynamic-item .method-name[data-method='get']{color:#20b4f0}
+.mock-main .api .dynamic-item .method-name[data-method='post']{color:#fa8b48}
+.mock-main .api .dynamic-item .method-name[data-method='put']{color:#f53c3c}
+.mock-main .api .dynamic-list .btn-remove{right:20px;}
+
+/* Editor */
+
+.m-right .path{width: 80%;}
+.m-right .res-req{
+    display: flex;
+    flex-grow: 1;
+    background-color: #16181b;
+}
+.m-right .res-req .input{
+    width: 100%;
+    border-bottom: 1px solid #2b3846;
+    padding: 0.5rem 1.5rem 0.2rem 0.4rem;
+}
+
+.m-right .res_body-textarea{
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #ccc;
+    padding: 1rem;
+    line-height: 1.5rem;
+    resize:none;
+    flex-grow: 1;
+    border-radius: 4px;
+    background-color: #23262b;
+}
+.m-right .res_body-textarea,
+.m-right .res-req .input{
+    font-family: "Consolas" ,"Monospace";
+}
+.m-right .sub-tab{
+    flex-grow: 1;
+    display: flex;
+}
+.m-right .sub-tab .mock-tab .tab-body{
+    padding: 15px;
+    overflow-y: auto;
+}
+.m-right .sub-tab .dynamic-item{
+    margin:0.5rem 0;
+}
+/* Layout */
+
+#app,
+#body,
+.mock-main,
+.content,
+.m-right{
+    display: flex;
+    flex-grow: 1;
+}
+#app{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    flex-direction: column
+}
+#body{
+    flex-grow: 1;
+    flex-basis: 100%;
+}
+.content{ display: none;}
+.content.active{display: flex;}
+
+.mock-main .m-left,
+.mock-main .m-right{
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+.mock-main .m-left{
+    padding-top:0;
+    flex-basis: 250px;
+    min-width: 250px;
+    background-color: #191f25;
 }

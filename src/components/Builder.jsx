@@ -11,19 +11,24 @@ const {ACTION_TYPE} = Service;
 
 function APIItem(props){
     return  <span key={props.id} onClick={()=>{props.onSwitchAPI(props.index)}}>
-            {props.method.toUpperCase()} / {props.path} 
+            <span data-method={props.method.toLowerCase()} className="method-name">{props.method.toUpperCase()}</span> / {props.path} 
         </span>
 }
 function ServerInfo({name,port,prefix,status,...props}){
     return <>
-        <div>
-            <Input  name='server-name' value={name} onUpdate={(value)=>{props.update({name:value})}}  /> 
-            <button onClick={()=>{props.onRunBtnClick()}}>{status ? 'stop' : 'run'}</button>
+        <div className='server-info'>
+            <Input  className = 'input-server-name' name='server-name' value={name} onUpdate={(value)=>{props.update({name:value})}}  /> 
+            <button
+                className={status ? 'btn btn-exec running' : 'btn btn-exec stopped'} 
+                onClick={()=>{props.onRunBtnClick()}}
+            >
+            {status ? 'stop' : 'run'}
+            </button>
         </div>
-        <div>
-            localhost:<Input name='port' value={port} onUpdate={(value)=>{props.update({port:value})}} /> 
+        <div className='port-prefix'>
+            localhost :<Input className='port' name='port' value={port} onUpdate={(value)=>{props.update({port:value})}} /> 
             / 
-            <Input  name='prefix' value={prefix} placeholder="prefix" onUpdate={(value)=>{props.update({'prefix':value})}}/>
+            <Input  className='prefix' name='prefix' value={prefix} placeholder="prefix" onUpdate={(value)=>{props.update({'prefix':value})}}/>
         </div>
     </>
 }
@@ -132,16 +137,21 @@ class Builder extends React.Component{
         return <div className={this.props.className}>
             <div className="m-left">
                 <ServerInfo {...server} update={this.updateServer} onRunBtnClick={this.handleRunBtnClick}/>
-                <DynamicItems 
-                    data={interfaces} 
-                    enableCheck={false}
-                    onRemove={(index)=>{this.removeInterface(index);console.log('remove API '+ index)}}
-                    onAdd={()=>{this.addInterface();console.log('add API')}}
-                >
-                    <APIItem onSwitchAPI={(index)=>{
-                        this.setState({currentInterfaceIndex:index});
-                    }}/>
-                </DynamicItems>
+                <div className="api">
+                    <span style={{marginLeft:'15px'}}>Api</span>
+                    <DynamicItems 
+                        currentIndex={currentInterfaceIndex}
+                        data={interfaces} 
+                        enableCheck={false}
+                        onRemove={(index)=>{this.removeInterface(index);console.log('remove API '+ index)}}
+                        onAdd={()=>{this.addInterface();console.log('add API')}}
+                    >
+                        <APIItem
+                            onSwitchAPI={(index)=>{
+                            this.setState({currentInterfaceIndex:index});
+                        }}/>
+                    </DynamicItems>
+                </div>
             </div>
             <APIEditor 
                 // {...interfaces[currentInterfaceIndex]}

@@ -11,13 +11,15 @@ class App extends React.Component{
         super(props);
     }
     render (){
-        return <div>
+        return <>
             <Header style={{backgroundColor:'#123'}}>
                 <div id="logo">Logo</div>
             </Header>
-            <Sider/>
-            <Content/>
-        </div>
+            <div id="body">
+                <Sider/>
+                <Content/>
+            </div>
+        </>
     }
 }
 

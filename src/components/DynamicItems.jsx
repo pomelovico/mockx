@@ -34,9 +34,12 @@ class DynamicItems extends React.Component{
         return items.length ? <ul>{items}</ul> : null;
     }
     componentWillReceiveProps(nextProps){
-        this.setState({data:nextProps.data});
+        this.setState({data:nextProps.data,currentIndex:nextProps.currentIndex});
     }
     shouldComponentUpdate(nextProps,nextState){
+        if(this.state.currentIndex != nextProps.currentIndex){
+            return true;
+        }
         if(nextState.data === this.state.data){
             return false;
         }
@@ -44,8 +47,8 @@ class DynamicItems extends React.Component{
     }
     renderRow(item,index){
         let child = this.props.children,
-            {enableRemove,enableCheck} = this.props;
-        return <li key={index}>
+            {enableRemove,enableCheck,currentIndex} = this.props;
+        return <li key={index}  className={currentIndex == index ? 'dynamic-item active' : 'dynamic-item'}>
             {/* <input 
                 type='checkbox'
                 checked={item.enable}
@@ -65,7 +68,7 @@ class DynamicItems extends React.Component{
                 },
                 child.props.children
             )}
-            {enableRemove !== false ? <button onClick={()=>{this.removeItem(index)}}>x</button> : null }
+            {enableRemove !== false ? <button className='btn btn-remove' onClick={()=>{this.removeItem(index)}}>+</button> : null }
         </li>
     }
     addItem(){
@@ -76,9 +79,9 @@ class DynamicItems extends React.Component{
     }
     render(){
         let {enableAdd} = this.props;
-        return <div>
+        return <div className='dynamic-list'>
             {this.buildList()}
-            <div>{enableAdd !== false ? <button onClick={this.addItem}>Add</button>  : null} </div>
+            <div>{enableAdd !== false ? <button className="btn btn-add" onClick={this.addItem}>+</button>  : null} </div>
         </div>
     }
 }

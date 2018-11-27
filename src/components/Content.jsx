@@ -8,7 +8,7 @@ import classNames from 'classnames';
 
 function Main(props){
     let {panel} = props.context.state;
-    return <div style={{'marginLeft':'100px'}}>
+    return <div className='mock-main'>
         <Builder className={classNames('content',{active:panel == 'builder'})}/> 
         <Logger className={classNames('content',{active:panel == 'logger'})}/>
     </div>

@@ -6,9 +6,9 @@ export class TabPane extends React.Component{
         this.name = 'tabpane';
     }
     render(){
-        return <div>
+        return <>
             {this.props.children}
-        </div>
+        </>
     }
 }
 
