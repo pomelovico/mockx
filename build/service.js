@@ -10,7 +10,9 @@ module.exports =  (function({ACTION_TYPE,fetch}){
         if(/(OPREATION)/.test(type)){
             let {op,sid} = payload;
             switch(op){
-                case 'start':return serverManager.run(sid);
+                case 'start':return serverManager.run(sid).then(res=>{return true},err=>{
+                    console.log(err);
+                });
                 case 'stop':return serverManager.stop(sid);
             }
             return;

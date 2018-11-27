@@ -38,7 +38,13 @@ class Server{
         for(let path in interfaces){
             let {method,res_body} = interfaces[path];
             method = method.toLowerCase();
-            app[method] && app[method](baseInfo.prefix+path,(req,res)=>{
+            let {prefix} = baseInfo;
+            if(prefix != ''){
+                prefix = '/' + prefix.replace(/^(\/)*|((\/)*)$/g,'');
+            }
+            path = '/' + path.replace(/^(\/)*/,'');
+            console.log(prefix+path);
+            app[method] && app[method](prefix+path,(req,res)=>{
                 res.send(res_body);
             })
         }
@@ -64,12 +70,13 @@ class Server{
         return new Promise((resolve,reject)=>{
             let {port} = this.info.baseInfo;
             this.portIsOccupied(port).then(()=>{
-                this.listener = this.app.listen(port,()=>{
+                this.listener = this.app.listen(port,'127.0.0.1',()=>{
                     resolve();
-                    console.log('start sever...');
+                    console.log('start sever...port=' + port);
                     this.status = 1;
                 });
             },(err)=>{
+                console.log('err at port' + port);
                 reject(err);
             })
         })
