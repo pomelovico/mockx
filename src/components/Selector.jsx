@@ -1,5 +1,4 @@
 import React from "react"
-import { updateLocale } from "moment";
 
 class Selector extends React.Component{
     constructor(props){
@@ -14,6 +13,13 @@ class Selector extends React.Component{
     }
     listenOnBody(e){
         this.hide();
+    }
+    componentWillReceiveProps(nextProps){
+        if(this.currentValue !== nextProps.defaultValue){
+            this.setState({
+                currentValue:nextProps.defaultValue
+            });
+        }
     }
     componentDidMount(){
         document.body.addEventListener('click',this.listenOnBody);

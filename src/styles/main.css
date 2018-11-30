@@ -6,7 +6,7 @@ html,body{
     padding:0;
     font-family: 'Helvetica' ,"sans-serif";
     color:#fff;
-    min-width: 800px;
+    min-width: 900px;
 }
 body *{
     /* transition: all .3s; */
@@ -268,6 +268,7 @@ ul,li{
 /*Sider*/
 .mock-sider{
     background-color: #131920;
+    width: 100px;
 }
 .mock-sider .dynamic-item{
     padding-left: 15px;
@@ -369,9 +370,9 @@ ul,li{
     width: 50px;
     display: inline-block;
 }
-.mock-main .api .dynamic-item .method-name[data-method='get']{color:#20b4f0}
-.mock-main .api .dynamic-item .method-name[data-method='post']{color:#fa8b48}
-.mock-main .api .dynamic-item .method-name[data-method='put']{color:#f53c3c}
+.method-name[data-method='get']{color:#20b4f0}
+.method-name[data-method='post']{color:#fa8b48}
+.method-name[data-method='put']{color:#f53c3c}
 .mock-main .api .dynamic-list .btn-remove{right:20px;}
 
 /* Editor */
@@ -402,7 +403,8 @@ ul,li{
     background-color: #23262b;
 }
 .m-right .res_body-textarea,
-.m-right .res-req .input{
+.m-right .res-req .input,
+.log-item .log-textarea{
     font-family: "Consolas" ,"Monospace";
 }
 .m-right .sub-tab{
@@ -416,6 +418,49 @@ ul,li{
 .m-right .sub-tab .dynamic-item{
     margin:0.5rem 0;
 }
+
+/*Logger*/
+.logs,
+.log-item .mock-log-head{
+    display: flex
+}
+.logs{
+    padding: 1rem;
+    flex-grow: 1;
+    overflow: auto;
+    flex-direction: column;
+}
+
+.log-item{
+    max-height: 300px;
+}
+.log-item .log-textarea{
+    width: 100%;
+    background-color: transparent;
+    color: #fdc47b;
+    border: none;
+    padding: 1rem;
+    line-height: 1.2rem;
+    resize: none;
+    font-size: 0.85rem;
+}
+.log-item .mock-log-head{
+    justify-content: space-between;
+    color: #8f9092;
+    padding: 0.75rem 0 0.25rem 0;
+    border-bottom: 1px solid #4a535c;
+}
+.log-item .mock-log-head .method-name{
+    width: 5rem;
+    display: inline-block;
+    flex-grow: 0;
+}
+
+/*Collapse*/
+.collapse .head{
+    cursor: pointer;
+}
+
 /* Layout */
 
 #app,

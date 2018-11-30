@@ -1,5 +1,6 @@
 const InterfaceModel = require('./model/InterfaceModel');
 const ServerModel = require('./model/ServerModel');
+const LogModel = require('./model/LogModel');
 const DataBase = require('./db/db');
 
 // const {successReturn,failReturn} = require('./handleReturn');
@@ -13,13 +14,15 @@ const DataBase = require('./db/db');
 
 
 const db = new DataBase();
-const im = new InterfaceModel(db);
+const im = new InterfaceModel(db);;
 const sm = new ServerModel(db);
+const lm = new LogModel(db);
 
 //
 const ACTION_TYPE = {
     ADD_SERVER:'ADD_SERVER',
     ADD_INTERFACE:"ADD_INTERFACE",
+    ADD_REQUEST_LOG:"ADD_REQUEST_LOG",
 
     REMOVE_SERVER:"REMOVE_SERVER",
     REMOVE_INTERFACE:'REMOVE_INTERFACE',
@@ -30,7 +33,10 @@ const ACTION_TYPE = {
     QUERY_SERVER:"QUERY_SERVER",
     QUERY_INTERFACE_ALL:"QUERY_ALL_INTERFACE_ALL",
     QUERY_INTERFACE_All_MORE:"QUERY_INTERFACE_All_MORE",
-    QUERY_INTERFACE_ONE:"QUERY_INTERFACE_ONE"
+    QUERY_INTERFACE_ONE:"QUERY_INTERFACE_ONE",
+    QUERY_REQUEST_LOG:"QUERY_REQUEST_LOG"
+
+
 }
 
 //偏函数，提前统一注入模型对象，
@@ -44,6 +50,7 @@ const createHandler = model => callback => {
 
 const handleServer = createHandler(sm);
 const handleInterface = createHandler(im);
+const handleLog = createHandler(lm);
 
 //Server相关
 const _removeServer = handleServer(({sid}, sm) => sm.delete(sid));
@@ -79,12 +86,19 @@ const _queryInterfaceAll = handleInterface(({sid},im) => im.getAll(sid));
 const _queryInterfaceOfServer = handleInterface(({sid},im) => im.getAllMore(sid));
 const _queryInterfaceDetail = handleInterface(({id},im) => im.get(id) );
 
+/* Log相关 */
+
+const _addLog = handleLog(({server,request}) => lm.create(server,request));
+const _queryLog = handleLog(({sid})=>lm.get(sid));
+
 function fetch(actionType,payload){
     switch(actionType){
 
         case ACTION_TYPE.ADD_SERVER : return _addServer(payload);
 
         case ACTION_TYPE.ADD_INTERFACE : return _addInterface(payload);
+
+        case ACTION_TYPE.ADD_REQUEST_LOG : return _addLog(payload);
 
         case ACTION_TYPE.REMOVE_SERVER : return _removeServer(payload);
 
@@ -99,6 +113,7 @@ function fetch(actionType,payload){
         case ACTION_TYPE.QUERY_INTERFACE_ALL : return _queryInterfaceAll(payload);
         case ACTION_TYPE.QUERY_INTERFACE_ALL_MORE : return _queryInterfaceOfServer(payload);
         case ACTION_TYPE.QUERY_INTERFACE_ONE : return _queryInterfaceDetail(payload);
+        case ACTION_TYPE.QUERY_REQUEST_LOG : return _queryLog(payload);
     }
 }
 

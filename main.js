@@ -7,8 +7,8 @@ const service = require('./server/service');
 let mainWindow
 function createWindow () {
   mainWindow = new BrowserWindow({
-    width:1280, 
-    height: 800,
+    width:1000, 
+    height: 720,
     center:true,
     title:"MockMe",
     titleBarStyle:'customButtonsOnHover',
@@ -27,7 +27,7 @@ function createWindow () {
   mainWindow.on('closed', function () {
     mainWindow = null
   });
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 app.on('ready', createWindow)

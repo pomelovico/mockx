@@ -27,12 +27,17 @@ class APIEditor extends React.Component{
         for(let key in data){
             if(~keys.indexOf(key)){
                 let str = data[key];
-                data[key] = !str ? [] : str.split(partten).map(value=>{
-                    return {
-                        value,
-                        enable:true
+                let temp = [];
+                if(str){
+                    let o = JSON.parse(str);
+                    for(let key in o){
+                        temp.push({
+                            value:`${key}=${o[key]}`,
+                            enable:true
+                        });
                     }
-                });
+                }
+                data[key] = !str ? [] : temp;
             }
         }
         return data;
@@ -71,11 +76,21 @@ class APIEditor extends React.Component{
             [filed]:temp
         });
         this._updateInterface({
-            [filed]: Array.isArray(temp)?temp.map(t=>t.value).join('&'):temp,
+            [filed]: Array.isArray(temp)  ? JSON.stringify(this.conversParamsArrayToObj(temp,filed)) /* temp.map(t=>t.value).join('&') */ : temp,
             id:this.state.id,
             sid:this.state.sid
         });
     }
+    conversParamsArrayToObj(arr,filed){
+        let reg = /(header)/;
+        let splitPartten = reg.test(filed) ? ":" : "=";
+        return arr.reduce((res,next)=>{
+            let ky = next.value.split(splitPartten);
+            res[ky[0]] = ky[1] || "";
+            return res;
+        },{})
+    }
+    
     add(filed){
         let arr = this.state[filed];
         if(Object.prototype.toString.call(arr) !== '[object Array]'){
@@ -93,7 +108,7 @@ class APIEditor extends React.Component{
         Service.fetch(ACTION_TYPE.UPDATE_INTERFACE,{
             id:this.state.id,
             sid:this.state.sid,
-            [filed]:filterd.map(t=>t.value).join('&')
+            [filed]: JSON.stringify(this.conversParamsArrayToObj(filterd,filed))
         }).then(res=>{
             this.setState({
                 [filed]:filterd
@@ -119,7 +134,7 @@ class APIEditor extends React.Component{
         }
         return <div className='m-right'>
             <div style={{paddingBottom:'15px',borderBottom:"1px solid #345"}}>
-                <Selector defaultValue="get" onChange={value=>{this.updateInterfaceBase({id:this.state.id,method:value.toLowerCase()})}}>
+                <Selector defaultValue={this.state.method || 'get'} onChange={value=>{this.updateInterfaceBase({id:this.state.id,method:value.toLowerCase()})}}>
                     <Option value="get" >GET</Option>
                     <Option value="post">POST</Option>
                     <Option value="put">PUT</Option>
@@ -127,7 +142,7 @@ class APIEditor extends React.Component{
                 </Selector>
                  &nbsp;&nbsp;&nbsp;&nbsp;/ <Input className='path' value={this.props.path} onUpdate={(value)=>{this.updateInterfaceBase({id:this.state.id,path:value})}}/>
             </div>
-            <div class='res-req'>
+            <div className='res-req'>
                 <Tab defaultActiveKey='1'>
                     <TabPane tab='REQUEST' key='1'>
                         <div className='sub-tab'>

@@ -11,7 +11,7 @@ class ServerManager{
             return;
         }
         return this.fetchServerInfo(sid,true).then(res=>{
-            let server = new Server(res);
+            let server = new Server(res,this.service);
             this.servers[sid] = server;
             return server.updateServerInfo(res);
         });
